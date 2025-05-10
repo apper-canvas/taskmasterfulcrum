@@ -222,7 +222,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
               Priority
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {['low', 'medium', 'high'].map((priority) => (
+              {['low', 'medium', 'high'].map((priority, index) => (
                 <button
                   key={priority}
                   type="button"
@@ -230,7 +230,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
                   className={`py-2 px-3 text-sm font-medium rounded-lg border transition-colors
                              ${formData.priority === priority ? getPriorityStyles(priority) : 'bg-surface-50 text-surface-600 border-surface-200 dark:bg-surface-800 dark:text-surface-400 dark:border-surface-700'}`}
                 >
-                  {priority.charAt(0).toUpperCase() + priority.slice(1)}
+                  {index + 1}
                 </button>
               ))}
             </div>
