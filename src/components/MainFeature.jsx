@@ -14,6 +14,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
     dueDate: '',
     category: '',
   });
+    project: '',
   
   const [formErrors, setFormErrors] = useState({});
   const [categories, setCategories] = useState([
@@ -21,6 +22,9 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
   ]);
   const [showCategoryInput, setShowCategoryInput] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+  const [projects, setProjects] = useState([
+    'Inbox', 'Home Renovation', 'Vacation Planning', 'Learn Spanish', 'Website Redesign'
+  ]);
   
   const PlusIcon = getIcon('Plus');
   const EditIcon = getIcon('Edit');
@@ -32,6 +36,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
   const TagIcon = getIcon('Tag');
   const CalendarIcon = getIcon('Calendar');
   const ListPlusIcon = getIcon('ListPlus');
+  const FolderIcon = getIcon('Folder');
   
   useEffect(() => {
     if (selectedTask) {
@@ -43,6 +48,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
         status: selectedTask.status || 'not started',
         dueDate: selectedTask.dueDate || '',
         category: selectedTask.category || '',
+        project: selectedTask.project || '',
       });
       setIsEditing(true);
     }
@@ -107,6 +113,7 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
       status: 'not started',
       dueDate: '',
       category: '',
+      project: '',
     });
     setFormErrors({});
     setIsEditing(false);
@@ -123,6 +130,23 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
       }
       setNewCategory('');
       setShowCategoryInput(false);
+    }
+  };
+  
+  const [showProjectInput, setShowProjectInput] = useState(false);
+  const [newProject, setNewProject] = useState('');
+  
+  const handleAddProject = () => {
+    if (newProject.trim()) {
+      if (projects.includes(newProject.trim())) {
+        toast.warning("This project already exists!");
+      } else {
+        setProjects(prev => [...prev, newProject.trim()]);
+        setFormData(prev => ({ ...prev, project: newProject.trim() }));
+        toast.success("New project added!");
+      }
+      setNewProject('');
+      setShowProjectInput(false);
     }
   };
   
@@ -251,6 +275,79 @@ const MainFeature = ({ addTask, updateTask, selectedTask }) => {
               min={new Date().toISOString().split('T')[0]}
             />
           </div>
+        </div>
+        
+        <div>
+          <label htmlFor="project" className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1 flex items-center">
+            <FolderIcon size={14} className="mr-1 text-surface-500" />
+            Project
+          </label>
+          
+          <AnimatePresence mode="wait">
+            {!showProjectInput ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="relative"
+              >
+                <select
+                  id="project"
+                  name="project"
+                  value={formData.project}
+                  onChange={handleChange}
+                  className="input-field"
+                >
+                  <option value="">Select a project</option>
+                  {projects.map((project) => (
+                    <option key={project} value={project}>
+                      {project}
+                    </option>
+                  ))}
+                </select>
+                
+                <button
+                  type="button"
+                  onClick={() => setShowProjectInput(true)}
+                  className="absolute right-0 top-0 h-full px-3 text-surface-500 hover:text-primary transition-colors"
+                >
+                  <ListPlusIcon size={18} />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="flex gap-2"
+              >
+                <input
+                  type="text"
+                  value={newProject}
+                  onChange={(e) => setNewProject(e.target.value)}
+                  placeholder="New project name"
+                  className="input-field"
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  onClick={handleAddProject}
+                  className="btn btn-primary"
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowProjectInput(false)}
+                  className="btn btn-outline"
+                >
+                  Cancel
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         
         <div>

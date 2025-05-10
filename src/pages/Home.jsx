@@ -24,6 +24,7 @@ const Home = () => {
   const ClockIcon = getIcon('Clock');
   const LayoutTemplateIcon = getIcon('LayoutTemplate');
   const CheckSquareIcon = getIcon('CheckSquare');
+  const FolderIcon = getIcon('Folder');
   const CircleOffIcon = getIcon('CircleOff');
   
   useEffect(() => {
@@ -73,6 +74,7 @@ const Home = () => {
     if (taskView === 'completed') return tasks.filter(task => task.status === 'completed');
     if (taskView === 'pending') return tasks.filter(task => task.status !== 'completed');
     if (taskView === 'high') return tasks.filter(task => task.priority === 'high');
+    if (taskView.startsWith('project:')) return tasks.filter(task => task.project === taskView.split(':')[1]);
     return tasks;
   };
   
@@ -84,6 +86,14 @@ const Home = () => {
   
   const getTaskCountByPriority = (priority) => {
     return tasks.filter(task => task.priority === priority).length;
+  };
+  
+  const getTaskCountByProject = (project) => {
+    return tasks.filter(task => task.project === project).length;
+  };
+  
+  const getProjects = () => {
+    return [...new Set(tasks.filter(task => task.project).map(task => task.project))];
   };
   
   const viewTask = (task) => {
@@ -117,7 +127,7 @@ const Home = () => {
           
           <div className="flex flex-col sm:flex-row gap-3">
             <button 
-              onClick={() => setTaskView('all')}
+            <button
               className={`btn ${taskView === 'all' ? 'btn-primary' : 'btn-outline'} flex items-center justify-center`}
             >
               <LayoutTemplateIcon size={18} className="mr-1" />
@@ -144,10 +154,23 @@ const Home = () => {
               <FilterIcon size={18} className="mr-1" />
               High Priority
             </button>
+            
+            <div className="relative group">
+              <button className="btn btn-outline flex items-center justify-center">
+                <FolderIcon size={18} className="mr-1" />
+                Projects
+              </button>
+              <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-surface-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10 hidden group-hover:block">
+                {getProjects().map(project => (
+                  <button
+                    key={project}
+                    onClick={() => setTaskView(`project:${project}`)}
+                    className={`w-full text-left px-4 py-2 text-sm hover:bg-surface-100 dark:hover:bg-surface-700 ${taskView === `project:${project}` ? 'bg-primary/10 text-primary' : ''}`}
+                  >{project}</button>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </motion.header>
-      
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -213,6 +236,7 @@ const Home = () => {
                 {taskView === 'all' ? 'All Tasks' : 
                  taskView === 'completed' ? 'Completed Tasks' : 
                  taskView === 'pending' ? 'Pending Tasks' :
+                 taskView.startsWith('project:') ? `Project: ${taskView.split(':')[1]}` :
                  taskView === 'high' ? 'High Priority Tasks' : 'Tasks'}
               </h2>
               <div className="text-sm text-surface-500">
@@ -278,6 +302,14 @@ const Home = () => {
                               {task.category}
                             </span>
                           )}
+                          
+                          {task.project && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-secondary-light/20 text-secondary-dark dark:bg-secondary-dark/30 dark:text-secondary-light flex items-center">
+                              <FolderIcon size={12} className="mr-1" />
+                              {task.project}
+                            </span>
+                          )}
+                          
                         </div>
                       </div>
                     </div>
@@ -345,7 +377,8 @@ const Home = () => {
                     {taskView === 'all' ? "You don't have any tasks yet. Add your first task to get started!" : 
                      taskView === 'completed' ? "You haven't completed any tasks yet." : 
                      taskView === 'pending' ? "You don't have any pending tasks." :
-                     "You don't have any high priority tasks."}
+                     taskView === 'high' ? "You don't have any high priority tasks." :
+                     taskView.startsWith('project:') ? `You don't have any tasks in this project.` : "No tasks match your filter."}
                   </p>
                 </div>
               )}
