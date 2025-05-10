@@ -5,9 +5,9 @@
 :root {
   --toastify-color-light: theme('colors.surface.50');
   --toastify-color-dark: theme('colors.surface.800');
-  --toastify-color-info: theme('colors.primary.DEFAULT');
-  --toastify-color-success: theme('colors.secondary.DEFAULT');
-  --toastify-color-warning: theme('colors.accent');
+  --toastify-color-info: theme('colors.primary.light');
+  --toastify-color-success: theme('colors.secondary.light');
+  --toastify-color-warning: theme('colors.primary.DEFAULT');
   --toastify-color-error: #e11d48;
 }
 
